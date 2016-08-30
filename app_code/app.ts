@@ -62,7 +62,7 @@ class Card {
     frontImage: HTMLImageElement;
     //isOpen: boolean;
     //isVisible: boolean;
-    
+
     constructor(cardId: number) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
@@ -119,7 +119,7 @@ class ConcentrationGame {
                 cell.setAttribute("id", "card" + n.toString());
                 cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + ","+ this.gameLevel+")");
                 cell.appendChild(backgroundImage);
-                console.log(cell);              
+                //console.log(cell);              
             }
         }
     }

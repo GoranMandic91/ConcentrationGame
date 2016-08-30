@@ -103,7 +103,6 @@ var ConcentrationGame = (function () {
                 cell.setAttribute("id", "card" + n.toString());
                 cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + "," + this.gameLevel + ")");
                 cell.appendChild(backgroundImage);
-                console.log(cell);
             }
         }
     };
