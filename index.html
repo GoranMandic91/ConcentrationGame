@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Concentration game</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app_code/app.js"></script>
+</head>
+<body>
+    <h1>Concentration game</h1>
+    <div id="playerName">        
+        <input type="text" id="player" placeholder="Please, enter your name"> 
+     
+        <label>Select difficulty level: </label>
+        <select id="level">
+            <option value="16">Begginer(4x4)</option>
+            <option value="36">Intermediate (6x6)</option>
+            <option value="64">Advanced (8x8)</option>
+        </select>
+        <input type="button" value="start game" onclick="startGame()">
+ 
+    </div>
+    <div id="content"></div>
+    
+    <div>
+        <div>
+            <div id="name">Player: </div>
+            <div id="time">Time: 00:00:00</div>
+            <div id="numberOfClicks">Number of clicks:</div>
+        </div>
+        <div>
+            <table align="center" id="table"></table>
+        </div>
+    </div>
+</body>
+</html>

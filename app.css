@@ -1,0 +1,20 @@
+﻿body {
+    font-family: 'Segoe UI', sans-serif;
+    text-align:center;
+}
+
+span {
+    font-style: italic;
+}
+
+h1{
+    text-align:center;
+}
+table {
+    cursor:pointer;    
+}
+
+img{
+    height:68px;
+    width:50px;
+}
