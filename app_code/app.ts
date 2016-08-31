@@ -252,3 +252,21 @@ function setSounds(){
     audioYes = new Audio("sounds/Yes.mp3");
     audioApplause = new Audio("sounds/Applause.mp3");
 }
+let isMuted:boolean =false;
+function muteSounds() {
+    if(isMuted===false){
+        audioOnStart.muted = true;
+        audioNo.muted = true;
+        audioCardFlip.muted = true;
+        audioYes.muted = true;
+        audioApplause.muted = true;
+        isMuted=true;
+    }else{
+        audioOnStart.muted = false;
+        audioNo.muted = false;
+        audioCardFlip.muted = false;
+        audioYes.muted = false;
+        audioApplause.muted = false;
+        isMuted=false;
+    }
+}
