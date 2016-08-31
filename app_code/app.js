@@ -55,16 +55,16 @@ var Card_Picture = [
     'images/ts.gif',
 ];
 var Card = (function () {
-    //isOpen: boolean;
-    //isVisible: boolean;
     function Card(cardId) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
         this.backImage.setAttribute("src", Card_Picture[0]);
-        this.backImage.setAttribute('style', "height:68px;width:50px;");
+        this.backImage.style.height = "68px";
+        this.backImage.style.width = "50px";
         this.frontImage = document.createElement("img");
         this.frontImage.setAttribute("src", Card_Picture[cardId + 1]);
-        this.frontImage.setAttribute('style', "height:68px;width:50px;");
+        this.frontImage.style.height = "68px";
+        this.frontImage.style.width = "50px";
     }
     return Card;
 }());
@@ -117,8 +117,9 @@ var ConcentrationGame = (function () {
     };
     return ConcentrationGame;
 }());
+var audioNo, audioYes;
+var audioOnStart, audioApplause;
 var audioCardFlip;
-var audioYes;
 function startGame() {
     if (mytime !== null) {
         clearInterval(mytime);
@@ -127,15 +128,21 @@ function startGame() {
     }
     var gameLevel = parseFloat(document.getElementById("level").value);
     var playerName = document.getElementById("player").value;
-    document.getElementById("name").innerHTML = "Player: " + playerName;
-    var cg = new ConcentrationGame(gameLevel, playerName);
-    cg.mixCards();
-    cg.showCards();
-    display();
-    var audioOnStart = new Audio("sounds/CardsShuffling.mp3");
-    audioOnStart.play();
-    audioCardFlip = new Audio("sounds/CardFlip.mp3");
-    audioYes = new Audio("sounds/Yes.mp3");
+    if (playerName !== '') {
+        document.getElementById("warning").removeAttribute("class");
+        document.getElementById("warning").innerHTML = "";
+        document.getElementById("name").innerHTML = "Player: " + playerName;
+        var cg = new ConcentrationGame(gameLevel, playerName);
+        cg.mixCards();
+        cg.showCards();
+        display();
+        setSounds();
+        audioOnStart.play();
+    }
+    else {
+        document.getElementById("warning").innerHTML = "You must insert your name! ";
+        document.getElementById("warning").setAttribute("class", "ui right pointing red basic label");
+    }
 }
 var temp = null;
 var tempCardId = null;
@@ -144,7 +151,7 @@ var gameOver = 0;
 function onClickCard(i, cardId, gameLevel) {
     var element = document.getElementById("card" + i);
     var element2;
-    if (element.innerHTML !== '') {
+    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>') {
         element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
         audioCardFlip.play();
         if (temp === null && tempCardId === null) {
@@ -154,8 +161,8 @@ function onClickCard(i, cardId, gameLevel) {
         else if (tempCardId === cardId && temp !== i) {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '';
-                element2.innerHTML = '';
+                element.innerHTML = '<div style="height:68px;width:50px;"></div>';
+                element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
                 audioYes.play();
             }, 450);
             temp = null;
@@ -170,7 +177,6 @@ function onClickCard(i, cardId, gameLevel) {
             setTimeout(function () {
                 element.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
                 element2.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
-                var audioNo = new Audio("sounds/No.wav");
                 audioNo.play();
             }, 450);
             temp = null;
@@ -179,7 +185,6 @@ function onClickCard(i, cardId, gameLevel) {
         numberOfClicks++;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
         if (gameOver === gameLevel) {
-            var audioApplause = new Audio("sounds/Applause.mp3");
             audioApplause.play();
             document.getElementById('table').innerHTML = "";
             gameOver = 0;
@@ -188,15 +193,11 @@ function onClickCard(i, cardId, gameLevel) {
         }
     }
 }
-var h = 0;
-var m = 0;
-var s = 0;
+var h = 0, m = 0, s = 0, mytime = 0;
 var str;
-var mytime = 0;
 function display() {
     h = m = s = 0;
-    var refresh = 1000;
-    mytime = setInterval('displayTime()', refresh);
+    mytime = setInterval('displayTime()', 1000);
 }
 function displayTime() {
     if (s < 10) {
@@ -230,4 +231,11 @@ function displayTime() {
             h = h + 1;
         }
     }
+}
+function setSounds() {
+    audioOnStart = new Audio("sounds/CardsShuffling.mp3");
+    audioNo = new Audio("sounds/No.wav");
+    audioCardFlip = new Audio("sounds/CardFlip.mp3");
+    audioYes = new Audio("sounds/Yes.mp3");
+    audioApplause = new Audio("sounds/Applause.mp3");
 }

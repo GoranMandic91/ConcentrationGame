@@ -1,5 +1,4 @@
-﻿
-const Card_Picture = [
+﻿const Card_Picture = [
     'images/img.jpg',
     'images/2c.gif',
     'images/2d.gif',
@@ -54,23 +53,23 @@ const Card_Picture = [
     'images/td.gif',
     'images/th.gif',
     'images/ts.gif',
-]
+];
 
 class Card {
     cardId: number;
     backImage: HTMLImageElement;
     frontImage: HTMLImageElement;
-    //isOpen: boolean;
-    //isVisible: boolean;
 
     constructor(cardId: number) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
         this.backImage.setAttribute("src", Card_Picture[0]);
-        this.backImage.setAttribute('style', "height:68px;width:50px;");
+        this.backImage.style.height= "68px";
+        this.backImage.style.width= "50px"; 
         this.frontImage = document.createElement("img");
         this.frontImage.setAttribute("src", Card_Picture[cardId+1]);
-        this.frontImage.setAttribute('style', "height:68px;width:50px;");
+        this.frontImage.style.height= "68px";
+        this.frontImage.style.width= "50px"; 
     }
    
 };
@@ -85,9 +84,7 @@ class Cards {
             this.cards[i] = new Card(i);
             this.cards[i + this.num / 2] = new Card(i);
         }
-
     }
-
 }
 
 class ConcentrationGame {
@@ -113,13 +110,11 @@ class ConcentrationGame {
             for (let j = 0; j < numberOfRows; j++) {
                 var n: number = i * numberOfRows + j;
                 var backgroundImage = this.table.cards[n].backImage;
-                var frontImage = this.table.cards[n].frontImage;
-                 
+                var frontImage = this.table.cards[n].frontImage;             
                 var cell = row.insertCell(0);                
                 cell.setAttribute("id", "card" + n.toString());
                 cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + ","+ this.gameLevel+")");
-                cell.appendChild(backgroundImage);
-                //console.log(cell);              
+                cell.appendChild(backgroundImage);             
             }
         }
     }
@@ -132,11 +127,13 @@ class ConcentrationGame {
             this.table.cards[j] = tem;
         }
         return this.table.cards;
-}
+    }
 }
 
-let audioCardFlip: HTMLAudioElement;
-let audioYes: HTMLAudioElement ;
+let audioNo: HTMLAudioElement, audioYes: HTMLAudioElement ;
+let audioOnStart: HTMLAudioElement, audioApplause : HTMLAudioElement ;
+let audioCardFlip: HTMLAudioElement ;
+
 function startGame() {
     if (mytime !== null) {
         clearInterval(mytime);
@@ -145,15 +142,20 @@ function startGame() {
     }
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
-    document.getElementById("name").innerHTML = "Player: " + playerName;
-    let cg = new ConcentrationGame(gameLevel, playerName);
-    cg.mixCards();
-    cg.showCards();
-    display();
-    let audioOnStart = new Audio("sounds/CardsShuffling.mp3");
-    audioOnStart.play();
-    audioCardFlip = new Audio("sounds/CardFlip.mp3");
-    audioYes = new Audio("sounds/Yes.mp3");
+    if(playerName!==''){
+        document.getElementById("warning").removeAttribute("class");
+        document.getElementById("warning").innerHTML="";
+        document.getElementById("name").innerHTML = "Player: " + playerName;
+        let cg = new ConcentrationGame(gameLevel, playerName);
+        cg.mixCards();
+        cg.showCards();
+        display();
+        setSounds();
+        audioOnStart.play();
+    }else {
+        document.getElementById("warning").innerHTML = "You must insert your name! ";
+        document.getElementById("warning").setAttribute("class", "ui right pointing red basic label")
+    }
 }
 
 var temp: number = null;
@@ -163,9 +165,9 @@ var gameOver = 0;
 
 function onClickCard(i: number, cardId: number, gameLevel: number): any {
     var element = document.getElementById("card" + i);
-    var element2:HTMLElement;
+    var element2: HTMLElement;
 
-    if (element.innerHTML !== '') {
+    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>') {
         element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
         audioCardFlip.play();
         if (temp === null && tempCardId === null) {
@@ -174,8 +176,8 @@ function onClickCard(i: number, cardId: number, gameLevel: number): any {
         } else if (tempCardId === cardId && temp !== i) {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '';
-                element2.innerHTML = '';
+                element.innerHTML = '<div style="height:68px;width:50px;"></div>';
+                element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
                 audioYes.play();
             }, 450);
             temp = null;
@@ -187,19 +189,15 @@ function onClickCard(i: number, cardId: number, gameLevel: number): any {
             element2 = document.getElementById("card" + temp); 
             setTimeout(function () {
                 element.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
-                let audioNo = new Audio("sounds/No.wav");
+                element2.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';                
                 audioNo.play();
             }, 450);
             temp = null;
             tempCardId = null;
         }
-
         numberOfClicks++;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
-
-        if (gameOver === gameLevel) {
-            let audioApplause = new Audio("sounds/Applause.mp3");
+        if (gameOver === gameLevel) {           
             audioApplause.play();
             document.getElementById('table').innerHTML = "";
             gameOver = 0;
@@ -209,20 +207,15 @@ function onClickCard(i: number, cardId: number, gameLevel: number): any {
     }
 }
 
-var h: number = 0;
-var m: number = 0;
-var s: number = 0;
-var str: string;
-var mytime: number = 0;
+let h: number = 0,  m: number = 0, s: number = 0, mytime: number = 0 ;
+let str: string;
 
 function display() {
     h = m = s = 0;
-    var refresh = 1000;
-    mytime = setInterval('displayTime()', refresh);
+    mytime = setInterval('displayTime()',1000);
 }
 
 function displayTime() {
-  
     if (s < 10) {
         var s1 = '0' + s;
     } else {
@@ -238,10 +231,8 @@ function displayTime() {
     } else {
         var h1 = h.toString();
     }
-
-     str= h1 + ':' + m1 + ':' + s1;
+    str= h1 + ':' + m1 + ':' + s1;
     document.getElementById('time').innerHTML = "Time: " + str;
-   
     if (s < 59) {
         s = s + 1;
     } else {
@@ -251,6 +242,13 @@ function displayTime() {
             m = 0;
             h = h + 1;
         } 
-    }
-  
+    }  
+}
+
+function setSounds(){
+    audioOnStart = new Audio("sounds/CardsShuffling.mp3");
+    audioNo = new Audio("sounds/No.wav");
+    audioCardFlip = new Audio("sounds/CardFlip.mp3");
+    audioYes = new Audio("sounds/Yes.mp3");
+    audioApplause = new Audio("sounds/Applause.mp3");
 }
