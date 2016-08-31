@@ -150,13 +150,21 @@ function startGame() {
         cg.mixCards();
         cg.showCards();
         display();
-        setSounds();
         audioOnStart.play();
     }else {
         document.getElementById("warning").innerHTML = "You must insert your name! ";
         document.getElementById("warning").setAttribute("class", "ui right pointing red basic label")
     }
 }
+
+window.onload = function() {
+  //setSounds();
+    audioOnStart = new Audio("sounds/CardsShuffling.mp3");
+    audioNo = new Audio("sounds/No.wav");
+    audioCardFlip = new Audio("sounds/CardFlip.mp3");
+    audioYes = new Audio("sounds/Yes.mp3");
+    audioApplause = new Audio("sounds/Applause.mp3");
+};
 
 var temp: number = null;
 var tempCardId: number = null;
@@ -199,7 +207,9 @@ function onClickCard(i: number, cardId: number, gameLevel: number): any {
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
         if (gameOver === gameLevel) {           
             audioApplause.play();
-            document.getElementById('table').innerHTML = "";
+            setTimeout(function () {
+                document.getElementById('table').innerHTML = "";
+            }, 450);
             gameOver = 0;
             numberOfClicks = 0;
             clearInterval(mytime);
@@ -245,28 +255,26 @@ function displayTime() {
     }  
 }
 
-function setSounds(){
+/*sfunction setSounds(){
     audioOnStart = new Audio("sounds/CardsShuffling.mp3");
     audioNo = new Audio("sounds/No.wav");
     audioCardFlip = new Audio("sounds/CardFlip.mp3");
     audioYes = new Audio("sounds/Yes.mp3");
     audioApplause = new Audio("sounds/Applause.mp3");
-}
-let isMuted:boolean =false;
+}*/
+
 function muteSounds() {
-    if(isMuted===false){
         audioOnStart.muted = true;
         audioNo.muted = true;
         audioCardFlip.muted = true;
         audioYes.muted = true;
-        audioApplause.muted = true;
-        isMuted=true;
-    }else{
+        audioApplause.muted = true;      
+}
+
+function unmuteSounds(){
         audioOnStart.muted = false;
         audioNo.muted = false;
         audioCardFlip.muted = false;
         audioYes.muted = false;
         audioApplause.muted = false;
-        isMuted=false;
-    }
 }

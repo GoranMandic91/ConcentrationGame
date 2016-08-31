@@ -21,16 +21,24 @@
                 <input type="text" id="player" placeholder="Please, enter your name" required>
             </div>
         </div>
-        <label>Select difficulty level: </label>
+        <label> Difficulty level: </label>
         <select id="level" class="ui dropdown">
             <option value="16" >Begginer(4x4)</option>
             <option value="36" >Intermediate (6x6)</option>
             <option value="64" >Advanced (8x8)</option>
         </select>
-        <input type="button" class="ui primary button"  value="start game" onclick="startGame()"> 
-        <button class="ui icon button" onclick=muteSounds()>
-           <i class="volume up icon"></i>
-        </button>     
+        <input type="button" class="ui primary button"  value="Start" onclick="startGame()"> 
+
+        <div class="ui buttons">
+            <button class="ui button" onclick=muteSounds()>
+                <i class="volume off icon"></i>
+            </button>
+            <div class="or"></div>
+            <button class="ui button" onclick=unmuteSounds()>
+                <i class="volume up icon"></i>
+            </button>
+        </div>
+
         <div>
             <div>
                 <div id="name">Player: </div>
