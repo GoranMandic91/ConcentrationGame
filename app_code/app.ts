@@ -1,5 +1,4 @@
-﻿const Card_Picture = [
-    'images/img.jpg',
+﻿ const Card_Picture = [
     'images/2c.gif',
     'images/2d.gif',
     'images/2h.gif',
@@ -54,6 +53,10 @@
     'images/th.gif',
     'images/ts.gif',
 ];
+ const Background =[
+     'images/img.jpg',
+     'images/b.gif'
+ ];
 
 class Card {
     cardId: number;
@@ -63,7 +66,7 @@ class Card {
     constructor(cardId: number) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
-        this.backImage.setAttribute("src", Card_Picture[0]);
+        this.backImage.setAttribute("src", Background[0]);
         this.backImage.style.height= "68px";
         this.backImage.style.width= "50px"; 
         this.frontImage = document.createElement("img");
@@ -130,6 +133,13 @@ class ConcentrationGame {
     }
 }
 
+class Highscore{
+    
+    constructor(public level: number, public name: string, public score:number, public time: string, public numOfCliks: number) {
+
+    }
+}
+
 let audioNo: HTMLAudioElement, audioYes: HTMLAudioElement ;
 let audioOnStart: HTMLAudioElement, audioApplause : HTMLAudioElement ;
 let audioCardFlip: HTMLAudioElement ;
@@ -138,7 +148,10 @@ function startGame() {
     if (mytime !== null) {
         clearInterval(mytime);
         numberOfClicks = 0;
+        gameOver=0;
+        score=0;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
+        document.getElementById('highscore').innerHTML = "";
     }
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
@@ -170,8 +183,8 @@ var temp: number = null;
 var tempCardId: number = null;
 var numberOfClicks = 0;
 var gameOver = 0;
-
-function onClickCard(i: number, cardId: number, gameLevel: number): any {
+let score=0;
+function onClickCard(i: number, cardId: number, gameLevel: number ): any {
     var element = document.getElementById("card" + i);
     var element2: HTMLElement;
 
@@ -190,28 +203,36 @@ function onClickCard(i: number, cardId: number, gameLevel: number): any {
             }, 450);
             temp = null;
             tempCardId = null;
+            score+=5;
             gameOver += 2;            
         } else if (tempCardId === cardId && temp == i) {
             numberOfClicks--;
         } else {         
             element2 = document.getElementById("card" + temp); 
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';                
+                element.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
+                element2.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';                
+                score-=1;
                 audioNo.play();
             }, 450);
             temp = null;
             tempCardId = null;
         }
         numberOfClicks++;
+        document.getElementById('score').innerHTML = "Score: " + score;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
         if (gameOver === gameLevel) {           
             audioApplause.play();
             setTimeout(function () {
                 document.getElementById('table').innerHTML = "";
             }, 450);
+            let name = (<HTMLInputElement>document.getElementById("player")).value;
+            let hs = new Highscore(gameLevel, name, score, str, numberOfClicks);
+            addToHighscore(hs);
+            printHighScoreTable(gameLevel.toString());
             gameOver = 0;
             numberOfClicks = 0;
+            score=0;
             clearInterval(mytime);
         }
     }
@@ -255,14 +276,6 @@ function displayTime() {
     }  
 }
 
-/*sfunction setSounds(){
-    audioOnStart = new Audio("sounds/CardsShuffling.mp3");
-    audioNo = new Audio("sounds/No.wav");
-    audioCardFlip = new Audio("sounds/CardFlip.mp3");
-    audioYes = new Audio("sounds/Yes.mp3");
-    audioApplause = new Audio("sounds/Applause.mp3");
-}*/
-
 function muteSounds() {
         audioOnStart.muted = true;
         audioNo.muted = true;
@@ -277,4 +290,67 @@ function unmuteSounds(){
         audioCardFlip.muted = false;
         audioYes.muted = false;
         audioApplause.muted = false;
+}
+
+
+
+function addToHighscore(hs: Highscore){
+    let highscore: Highscore[] = new Array();
+    if (typeof(Storage) !== "undefined") {
+        for(let i=0; i<10; i++){
+                highscore[i] = <Highscore>JSON.parse(localStorage.getItem(hs.level.toString()+i));
+        }
+        console.log(highscore);
+        for(let i=0; i<10; i++){
+                if(highscore[i] !== null && hs.score>= highscore[i].score){
+                      let temp: Highscore =highscore[i];
+                      let temp2:Highscore;
+                      highscore[i]=hs;
+                      for(let j=i+1;j<10;j++){
+                        temp2 =highscore[j];
+                        highscore[j]=temp;
+                        temp=temp2;
+                      }
+                      break;  
+                }else if(highscore[i] === null){
+                    highscore[i]=hs;
+                    break;
+                }
+        }
+        console.log(highscore);
+        for(let i=0; i<10; i++){
+                localStorage.setItem(hs.level.toString()+i, JSON.stringify(highscore[i]));
+        }
+    } else {
+        document.getElementById("highscore").innerHTML = "Sorry, your browser does not support Web Storage...";
+    }
+}
+function printHighScoreTable(level:string){
+    let table: HTMLTableElement = <HTMLTableElement>document.getElementById('highscore');
+    let header = table.createTHead();
+    let row: HTMLTableRowElement = <HTMLTableRowElement>header.insertRow(-1);
+    row.setAttribute("class", "center aligned");
+    let cell = row.insertCell(-1);                
+    cell.innerHTML ="Player name";
+    cell = row.insertCell(-1);                
+    cell.innerHTML="Score";
+    cell = row.insertCell(-1);                
+    cell.innerHTML="Number of clicks";
+    cell = row.insertCell(-1);                
+    cell.innerHTML="Time";
+    for (let i = 0; i < 10; i++) {
+            let myObject:Highscore = JSON.parse(localStorage.getItem(level+i));                           
+            if(myObject!==null){
+            row = <HTMLTableRowElement>table.insertRow();
+            row.setAttribute("class", "center aligned");
+            cell = row.insertCell(-1);                
+            cell.innerHTML = myObject.name;
+            cell = row.insertCell(-1);                
+            cell.innerHTML=myObject.score.toString();
+            cell = row.insertCell(-1);                
+            cell.innerHTML=myObject.numOfCliks.toString();
+            cell = row.insertCell(-1);                
+            cell.innerHTML=myObject.time;
+        }
+    }
 }

@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.css">
     <link rel="stylesheet" href="app.css" type="text/css" />
     <script src="app_code/app.js"></script>
+    <!--<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">stLight.options({publisher: "6863ce6d-4a05-45ef-a727-d7794a971ad8", shorten: false});</script>-->
 </head>
 <body>
+
     <div class="ui container">
         <br>
         <h1 class="ui center aligned header ">       
@@ -38,16 +41,22 @@
                 <i class="volume up icon"></i>
             </button>
         </div>
-
+        
         <div>
             <div>
                 <div id="name">Player: </div>
                 <div id="time">Time: 00:00:00</div>
                 <div id="numberOfClicks">Number of clicks:</div>
+                <div id="score">Score: </div>
             </div>
             <div>
-                <table align="center" id="table"></table>
+                <table align="center" id="table" </table>
+                
             </div>
+            <!--<span class='st_facebook_large' displayText='Facebook' st_title="I just scored 100 points in Concentration game"></span>
+            <span class='st_twitter_large' displayText='Tweet' st_title="I just scored 100 points in Concentration game"></span>
+            <span class='st_linkedin_large' displayText='LinkedIn' st_title="I just scored 100 points in Concentration game"></span>-->
+            <table id="highscore" class="ui inverted blue selectable celled table" > </table>
         </div>
     </div>
 </body>

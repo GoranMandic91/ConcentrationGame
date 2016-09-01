@@ -1,5 +1,4 @@
 var Card_Picture = [
-    'images/img.jpg',
     'images/2c.gif',
     'images/2d.gif',
     'images/2h.gif',
@@ -54,11 +53,15 @@ var Card_Picture = [
     'images/th.gif',
     'images/ts.gif',
 ];
+var Background = [
+    'images/img.jpg',
+    'images/b.gif'
+];
 var Card = (function () {
     function Card(cardId) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
-        this.backImage.setAttribute("src", Card_Picture[0]);
+        this.backImage.setAttribute("src", Background[0]);
         this.backImage.style.height = "68px";
         this.backImage.style.width = "50px";
         this.frontImage = document.createElement("img");
@@ -117,6 +120,16 @@ var ConcentrationGame = (function () {
     };
     return ConcentrationGame;
 }());
+var Highscore = (function () {
+    function Highscore(level, name, score, time, numOfCliks) {
+        this.level = level;
+        this.name = name;
+        this.score = score;
+        this.time = time;
+        this.numOfCliks = numOfCliks;
+    }
+    return Highscore;
+}());
 var audioNo, audioYes;
 var audioOnStart, audioApplause;
 var audioCardFlip;
@@ -124,7 +137,10 @@ function startGame() {
     if (mytime !== null) {
         clearInterval(mytime);
         numberOfClicks = 0;
+        gameOver = 0;
+        score = 0;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
+        document.getElementById('highscore').innerHTML = "";
     }
     var gameLevel = parseFloat(document.getElementById("level").value);
     var playerName = document.getElementById("player").value;
@@ -155,6 +171,7 @@ var temp = null;
 var tempCardId = null;
 var numberOfClicks = 0;
 var gameOver = 0;
+var score = 0;
 function onClickCard(i, cardId, gameLevel) {
     var element = document.getElementById("card" + i);
     var element2;
@@ -174,6 +191,7 @@ function onClickCard(i, cardId, gameLevel) {
             }, 450);
             temp = null;
             tempCardId = null;
+            score += 5;
             gameOver += 2;
         }
         else if (tempCardId === cardId && temp == i) {
@@ -182,22 +200,29 @@ function onClickCard(i, cardId, gameLevel) {
         else {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Card_Picture[0] + '" style="height:68px;width:50px;">';
+                element.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
+                element2.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
+                score -= 1;
                 audioNo.play();
             }, 450);
             temp = null;
             tempCardId = null;
         }
         numberOfClicks++;
+        document.getElementById('score').innerHTML = "Score: " + score;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
         if (gameOver === gameLevel) {
             audioApplause.play();
             setTimeout(function () {
                 document.getElementById('table').innerHTML = "";
             }, 450);
+            var name_1 = document.getElementById("player").value;
+            var hs = new Highscore(gameLevel, name_1, score, str, numberOfClicks);
+            addToHighscore(hs);
+            printHighScoreTable(gameLevel.toString());
             gameOver = 0;
             numberOfClicks = 0;
+            score = 0;
             clearInterval(mytime);
         }
     }
@@ -241,13 +266,6 @@ function displayTime() {
         }
     }
 }
-/*sfunction setSounds(){
-    audioOnStart = new Audio("sounds/CardsShuffling.mp3");
-    audioNo = new Audio("sounds/No.wav");
-    audioCardFlip = new Audio("sounds/CardFlip.mp3");
-    audioYes = new Audio("sounds/Yes.mp3");
-    audioApplause = new Audio("sounds/Applause.mp3");
-}*/
 function muteSounds() {
     audioOnStart.muted = true;
     audioNo.muted = true;
@@ -261,4 +279,66 @@ function unmuteSounds() {
     audioCardFlip.muted = false;
     audioYes.muted = false;
     audioApplause.muted = false;
+}
+function addToHighscore(hs) {
+    var highscore = new Array();
+    if (typeof (Storage) !== "undefined") {
+        for (var i = 0; i < 10; i++) {
+            highscore[i] = JSON.parse(localStorage.getItem(hs.level.toString() + i));
+        }
+        console.log(highscore);
+        for (var i = 0; i < 10; i++) {
+            if (highscore[i] !== null && hs.score >= highscore[i].score) {
+                var temp_1 = highscore[i];
+                var temp2 = void 0;
+                highscore[i] = hs;
+                for (var j = i + 1; j < 10; j++) {
+                    temp2 = highscore[j];
+                    highscore[j] = temp_1;
+                    temp_1 = temp2;
+                }
+                break;
+            }
+            else if (highscore[i] === null) {
+                highscore[i] = hs;
+                break;
+            }
+        }
+        console.log(highscore);
+        for (var i = 0; i < 10; i++) {
+            localStorage.setItem(hs.level.toString() + i, JSON.stringify(highscore[i]));
+        }
+    }
+    else {
+        document.getElementById("highscore").innerHTML = "Sorry, your browser does not support Web Storage...";
+    }
+}
+function printHighScoreTable(level) {
+    var table = document.getElementById('highscore');
+    var header = table.createTHead();
+    var row = header.insertRow(-1);
+    row.setAttribute("class", "center aligned");
+    var cell = row.insertCell(-1);
+    cell.innerHTML = "Player name";
+    cell = row.insertCell(-1);
+    cell.innerHTML = "Score";
+    cell = row.insertCell(-1);
+    cell.innerHTML = "Number of clicks";
+    cell = row.insertCell(-1);
+    cell.innerHTML = "Time";
+    for (var i = 0; i < 10; i++) {
+        var myObject = JSON.parse(localStorage.getItem(level + i));
+        if (myObject !== null) {
+            row = table.insertRow();
+            row.setAttribute("class", "center aligned");
+            cell = row.insertCell(-1);
+            cell.innerHTML = myObject.name;
+            cell = row.insertCell(-1);
+            cell.innerHTML = myObject.score.toString();
+            cell = row.insertCell(-1);
+            cell.innerHTML = myObject.numOfCliks.toString();
+            cell = row.insertCell(-1);
+            cell.innerHTML = myObject.time;
+        }
+    }
 }
