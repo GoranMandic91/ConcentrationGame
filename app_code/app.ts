@@ -153,6 +153,7 @@ function startGame() {
         score=0;
         document.getElementById('numberOfClicks').innerHTML = "Number of clicks: " + numberOfClicks;
         document.getElementById('highscore').innerHTML = "";
+        document.getElementById('share').innerHTML = "";
     }
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
@@ -359,5 +360,46 @@ function printHighScoreTable(level:string){
             cell = row.insertCell(-1);                
             cell.innerHTML=myObject.time;
         }
+    }
+    showShareButtons();
+}
+
+function showShareButtons(){
+    let share= document.getElementById('share');
+    let h2=document.createElement('h2');
+    h2.innerHTML="Share your score on: ";
+    share.appendChild(h2);
+
+    let a = document.createElement('a');
+    a.setAttribute("onclick", "openNewWindow('http://www.facebook.com/sharer.php?u=https://www.google.rs/#q=Concentration+Game&t=I%20just%20scored%20" + score +"%20points%20in%20Concentration%20game'); return false;");
+    a.setAttribute("target", "_blank");
+    let img=document.createElement('img');
+    img.setAttribute("src", "images/facebook.png");
+    a.appendChild(img);
+    share.appendChild(a);
+
+    a = document.createElement('a');
+    a.setAttribute("onclick", "openNewWindow('https://twitter.com/share?text=I%20just%20scored%20" +score + "%20points%20in%20Concentration%20game&amp;hashtags=ConcentrationGame'); return false;");
+    a.setAttribute("target", "_blank");
+    img=document.createElement('img');
+    img.setAttribute("src", "images/twitter.png");
+    a.appendChild(img);
+    share.appendChild(a);
+
+    a = document.createElement('a');
+    a.setAttribute("onclick", "openNewWindow('http://www.linkedin.com/shareArticle?mini=true&url=https://www.google.rs/&title=I%20just%20scored%20"+score+"%20points%20in%20Concentration%20game&summary=My%20favorite%20game&source=ConcentrationGame'); return false;");
+    a.setAttribute("target", "_blank");
+    img=document.createElement('img');
+    img.setAttribute("src", "images/linkedin.png");
+    a.appendChild(img);
+    share.appendChild(a);
+
+}
+
+function openNewWindow(url:string) {
+    let width: number = 600;
+    let height:number = 400; 
+    let newWindow=window.open(url, name || 'window' + Math.floor(Math.random() * 10000 + 1), 'width='+width+', height='+height); if (window.focus) {
+        newWindow.focus();
     }
 }
