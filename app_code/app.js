@@ -54,6 +54,7 @@ var Card_Picture = [
     'images/ts.gif',
 ];
 var Background = [
+    'images/back.jpg',
     'images/img.jpg',
     'images/b.gif'
 ];
@@ -317,8 +318,13 @@ function printHighScoreTable(level) {
     var table = document.getElementById('highscore');
     var header = table.createTHead();
     var row = header.insertRow(-1);
-    row.setAttribute("class", "center aligned");
     var cell = row.insertCell(-1);
+    cell.setAttribute("class", "center aligned");
+    cell.innerHTML = "High score table";
+    header = table.createTHead();
+    row = header.insertRow(-1);
+    row.setAttribute("class", "center aligned");
+    cell = row.insertCell(-1);
     cell.innerHTML = "Player name";
     cell = row.insertCell(-1);
     cell.innerHTML = "Score";

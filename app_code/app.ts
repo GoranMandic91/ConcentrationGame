@@ -54,6 +54,7 @@
     'images/ts.gif',
 ];
  const Background =[
+     'images/back.jpg',
      'images/img.jpg',
      'images/b.gif'
  ];
@@ -325,12 +326,18 @@ function addToHighscore(hs: Highscore){
         document.getElementById("highscore").innerHTML = "Sorry, your browser does not support Web Storage...";
     }
 }
+
 function printHighScoreTable(level:string){
     let table: HTMLTableElement = <HTMLTableElement>document.getElementById('highscore');
     let header = table.createTHead();
     let row: HTMLTableRowElement = <HTMLTableRowElement>header.insertRow(-1);
+    let cell = row.insertCell(-1);
+    cell.setAttribute("class", "center aligned");
+    cell.innerHTML ="High score table"; 
+    header = table.createTHead();
+    row = <HTMLTableRowElement>header.insertRow(-1);
     row.setAttribute("class", "center aligned");
-    let cell = row.insertCell(-1);                
+    cell = row.insertCell(-1);                
     cell.innerHTML ="Player name";
     cell = row.insertCell(-1);                
     cell.innerHTML="Score";
