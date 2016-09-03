@@ -10,10 +10,13 @@
 </head>
 <body>
 
-    <div class="ui container">
+    <div class="ui container" style="width:650px; background:gray;">
         <br>
-        <h1 class="ui center aligned header ">       
-            <div class="content"> Concentration Game </div>
+        <h1 class="ui center aligned header">                 
+            <div class="content"> 
+                <i class="student icon"></i> 
+                Concentration Game 
+            </div>
         </h1>  
         
         <div class="ui input focus"> 
@@ -22,14 +25,8 @@
                 <input type="text" id="player" placeholder="Please, enter your name" required>
             </div>
         </div>
-        <label> Difficulty level: </label>
-        <select id="level" class="ui dropdown">
-            <option value="16" >Begginer(4x4)</option>
-            <option value="36" >Intermediate (6x6)</option>
-            <option value="64" >Advanced (8x8)</option>
-        </select>
         <input type="button" class="ui primary button"  value="Start" onclick="startGame()"> 
-
+        
         <div class="ui buttons">
             <button class="ui button" onclick=muteSounds()>
                 <i class="volume off icon"></i>
@@ -39,6 +36,22 @@
                 <i class="volume up icon"></i>
             </button>
         </div>
+        <div>
+            <label> Difficulty level: </label>
+            <select id="level" class="ui dropdown">
+                <option value="16" >Begginer(4x4)</option>
+                <option value="36" >Intermediate (6x6)</option>
+                <option value="64" >Advanced (8x8)</option>
+            </select>
+            <label> Back photo: </label>
+            <select id="back" class="ui dropdown">
+                <option value="0" >Classic blue</option>
+                <option value="1" >Classic red</option>
+                <option value="2" >Old gold</option>
+            </select>
+       </div>
+
+        
         
         
         <div>
@@ -47,14 +60,12 @@
             <div id="numberOfClicks">Number of clicks:</div>
             <div id="score">Score: </div>
         </div>
-    
-        <div>
-            <table align="center" id="table" >  </table>                
-        </div>   
-        
+       
+        <table align="center" id="table" >  </table>                
+           
         <table id="highscore" class="ui blue inverted selectable celled table" > </table>
-    
         <div id="share"> </div>
+          
     </div>
 </body>
 </html>

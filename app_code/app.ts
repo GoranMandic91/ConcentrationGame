@@ -64,10 +64,10 @@ class Card {
     backImage: HTMLImageElement;
     frontImage: HTMLImageElement;
 
-    constructor(cardId: number) {
+    constructor(cardId: number, backImgId:number) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
-        this.backImage.setAttribute("src", Background[0]);
+        this.backImage.setAttribute("src", Background[backImageId]);
         this.backImage.style.height= "68px";
         this.backImage.style.width= "50px"; 
         this.frontImage = document.createElement("img");
@@ -82,11 +82,11 @@ class Cards {
     num: number;
     cards: Card[] = new Array();
 
-    constructor(num: number) {
+    constructor(num: number, backImgId:number ) {
         this.num = num;
         for (let i = 0; i < this.num/2; i++){
-            this.cards[i] = new Card(i);
-            this.cards[i + this.num / 2] = new Card(i);
+            this.cards[i] = new Card(i,backImgId);
+            this.cards[i + this.num / 2] = new Card(i,backImgId);
         }
     }
 }
@@ -94,12 +94,14 @@ class Cards {
 class ConcentrationGame {
     gameLevel: number;
     playerName: string;
+    backImgId: number
     table: Cards;
 
-    constructor(gameLevel: number, playerName: string) {
+    constructor(gameLevel: number, playerName: string, backImgId: number) {
         this.gameLevel = gameLevel;
         this.playerName = playerName;
-        this.table = new Cards(this.gameLevel);              
+        this.backImgId=backImgId;
+        this.table = new Cards(this.gameLevel, this.backImgId);              
     }
 
     showCards() {
@@ -144,7 +146,7 @@ class Highscore{
 let audioNo: HTMLAudioElement, audioYes: HTMLAudioElement ;
 let audioOnStart: HTMLAudioElement, audioApplause : HTMLAudioElement ;
 let audioCardFlip: HTMLAudioElement ;
-
+let backImageId: number;
 function startGame() {
     flag = false;
     if (mytime !== null) {
@@ -157,12 +159,13 @@ function startGame() {
         document.getElementById('share').innerHTML = "";
     }
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
+    backImageId = parseFloat((<HTMLInputElement>document.getElementById("back")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
     if(playerName!==''){
         document.getElementById("warning").removeAttribute("class");
         document.getElementById("warning").innerHTML="";
         document.getElementById("name").innerHTML = "Player: " + playerName;
-        let cg = new ConcentrationGame(gameLevel, playerName);
+        let cg = new ConcentrationGame(gameLevel, playerName,backImageId);
         cg.mixCards();
         cg.showCards();
         display();
@@ -216,8 +219,8 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
         } else {         
             element2 = document.getElementById("card" + temp); 
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';                
+                element.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
+                element2.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';                
                 score-=1;
                 audioNo.play();
                 flag=false;

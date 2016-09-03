@@ -59,10 +59,10 @@ var Background = [
     'images/b.gif'
 ];
 var Card = (function () {
-    function Card(cardId) {
+    function Card(cardId, backImgId) {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
-        this.backImage.setAttribute("src", Background[0]);
+        this.backImage.setAttribute("src", Background[backImageId]);
         this.backImage.style.height = "68px";
         this.backImage.style.width = "50px";
         this.frontImage = document.createElement("img");
@@ -74,21 +74,22 @@ var Card = (function () {
 }());
 ;
 var Cards = (function () {
-    function Cards(num) {
+    function Cards(num, backImgId) {
         this.cards = new Array();
         this.num = num;
         for (var i = 0; i < this.num / 2; i++) {
-            this.cards[i] = new Card(i);
-            this.cards[i + this.num / 2] = new Card(i);
+            this.cards[i] = new Card(i, backImgId);
+            this.cards[i + this.num / 2] = new Card(i, backImgId);
         }
     }
     return Cards;
 }());
 var ConcentrationGame = (function () {
-    function ConcentrationGame(gameLevel, playerName) {
+    function ConcentrationGame(gameLevel, playerName, backImgId) {
         this.gameLevel = gameLevel;
         this.playerName = playerName;
-        this.table = new Cards(this.gameLevel);
+        this.backImgId = backImgId;
+        this.table = new Cards(this.gameLevel, this.backImgId);
     }
     ConcentrationGame.prototype.showCards = function () {
         var numberOfRows = Math.sqrt(this.gameLevel);
@@ -134,6 +135,7 @@ var Highscore = (function () {
 var audioNo, audioYes;
 var audioOnStart, audioApplause;
 var audioCardFlip;
+var backImageId;
 function startGame() {
     flag = false;
     if (mytime !== null) {
@@ -146,12 +148,13 @@ function startGame() {
         document.getElementById('share').innerHTML = "";
     }
     var gameLevel = parseFloat(document.getElementById("level").value);
+    backImageId = parseFloat(document.getElementById("back").value);
     var playerName = document.getElementById("player").value;
     if (playerName !== '') {
         document.getElementById("warning").removeAttribute("class");
         document.getElementById("warning").innerHTML = "";
         document.getElementById("name").innerHTML = "Player: " + playerName;
-        var cg = new ConcentrationGame(gameLevel, playerName);
+        var cg = new ConcentrationGame(gameLevel, playerName, backImageId);
         cg.mixCards();
         cg.showCards();
         display();
@@ -193,7 +196,6 @@ function onClickCard(i, cardId, gameLevel) {
                 element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
                 audioYes.play();
                 flag = false;
-                //console.log(flag);
             }, 500);
             temp = null;
             tempCardId = null;
@@ -207,12 +209,11 @@ function onClickCard(i, cardId, gameLevel) {
         else {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';
+                element.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
+                element2.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
                 score -= 1;
                 audioNo.play();
                 flag = false;
-                //console.log(flag);
             }, 500);
             temp = null;
             tempCardId = null;
