@@ -146,6 +146,7 @@ let audioOnStart: HTMLAudioElement, audioApplause : HTMLAudioElement ;
 let audioCardFlip: HTMLAudioElement ;
 
 function startGame() {
+    flag = false;
     if (mytime !== null) {
         clearInterval(mytime);
         numberOfClicks = 0;
@@ -186,11 +187,12 @@ var tempCardId: number = null;
 var numberOfClicks = 0;
 var gameOver = 0;
 let score=0;
+let flag:boolean = false;
+
 function onClickCard(i: number, cardId: number, gameLevel: number ): any {
     var element = document.getElementById("card" + i);
     var element2: HTMLElement;
-
-    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>') {
+    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>' &&  flag === false) {
         element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
         audioCardFlip.play();
         if (temp === null && tempCardId === null) {
@@ -202,11 +204,13 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
                 element.innerHTML = '<div style="height:68px;width:50px;"></div>';
                 element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
                 audioYes.play();
-            }, 450);
+                flag=false;
+            }, 500);
             temp = null;
             tempCardId = null;
             score+=5;
-            gameOver += 2;            
+            gameOver += 2; 
+            flag=true;           
         } else if (tempCardId === cardId && temp == i) {
             numberOfClicks--;
         } else {         
@@ -216,9 +220,11 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
                 element2.innerHTML = '<img src="' + Background[0] + '" style="height:68px;width:50px;">';                
                 score-=1;
                 audioNo.play();
-            }, 450);
+                flag=false;
+            }, 500);
             temp = null;
             tempCardId = null;
+            flag=true;
         }
         numberOfClicks++;
         document.getElementById('score').innerHTML = "Score: " + score;
@@ -227,7 +233,7 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
             audioApplause.play();
             setTimeout(function () {
                 document.getElementById('table').innerHTML = "";
-            }, 450);
+            }, 500);
             let name = (<HTMLInputElement>document.getElementById("player")).value;
             let hs = new Highscore(gameLevel, name, score, str, numberOfClicks);
             addToHighscore(hs);
@@ -236,6 +242,7 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
             numberOfClicks = 0;
             score=0;
             clearInterval(mytime);
+            flag=false;
         }
     }
 }
