@@ -31,37 +31,53 @@
             <button class="ui button" onclick=muteSounds()>
                 <i class="volume off icon"></i>
             </button>
-            <div class="or"></div>
+            <div class="or" data-text="vol"></div>
             <button class="ui button" onclick=unmuteSounds()>
                 <i class="volume up icon"></i>
             </button>
         </div>
         <div>
-            <label> Difficulty level: </label>
+            <div class="ui right pointing blue large label">
+                 Custom level
+            </div>
             <select id="level" class="ui dropdown">
                 <option value="16" >Begginer(4x4)</option>
                 <option value="36" >Intermediate (6x6)</option>
                 <option value="64" >Advanced (8x8)</option>
-            </select>
-            <label> Back photo: </label>
-            <select id="back" class="ui dropdown">
+            </select>  
+            <div class="ui right pointing blue large label">
+                Back photo
+             </div>
+            <select id="back" class="ui dropdown">                   
                 <option value="0" >Classic blue</option>
                 <option value="1" >Classic red</option>
                 <option value="2" >Old gold</option>
-            </select>
-       </div>
+            </select>         
+        </div>
+        <div class="ui inverted blue segment">
+            <div class="ui blue large label">
+                Row number
+            </div>
+            <div class="ui inverted input">
+                <input id="row" type="text" placeholder="Set number of rows">
+            </div>
+            <div class="ui blue large label">
+                Column number
+            </div>
+            <div class="ui inverted input">
+                <input id="column" type="text" placeholder="Set number of columns">
+            </div>
+            <div id="warningSize"> </div>
 
-        
-        
-        
-        <div>
+            <div class="ui inverted divider"></div>
+
             <div id="name">Player: </div>
             <div id="time">Time: 00:00:00</div>
             <div id="numberOfClicks">Number of clicks:</div>
             <div id="score">Score: </div>
         </div>
        
-        <table align="center" id="table" >  </table>                
+        <table align="center" id="table">  </table>                
            
         <table id="highscore" class="ui blue inverted selectable celled table" > </table>
         <div id="share"> </div>

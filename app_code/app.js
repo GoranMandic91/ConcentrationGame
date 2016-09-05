@@ -85,23 +85,24 @@ var Cards = (function () {
     return Cards;
 }());
 var ConcentrationGame = (function () {
-    function ConcentrationGame(gameLevel, playerName, backImgId) {
+    function ConcentrationGame(gameLevel, rowNum, columnNum, playerName, backImgId) {
         this.gameLevel = gameLevel;
+        this.rowNum = rowNum;
+        this.columnNum = columnNum;
         this.playerName = playerName;
         this.backImgId = backImgId;
         this.table = new Cards(this.gameLevel, this.backImgId);
     }
     ConcentrationGame.prototype.showCards = function () {
-        var numberOfRows = Math.sqrt(this.gameLevel);
         var tab = document.getElementById('table');
         if (tab.innerHTML !== '') {
             tab.innerHTML = "";
             numberOfClicks = 0;
         }
-        for (var i = 0; i < numberOfRows; i++) {
+        for (var i = 0; i < this.rowNum; i++) {
             var row = tab.insertRow();
-            for (var j = 0; j < numberOfRows; j++) {
-                var n = i * numberOfRows + j;
+            for (var j = 0; j < this.columnNum; j++) {
+                var n = i * this.columnNum + j;
                 var backgroundImage = this.table.cards[n].backImage;
                 var frontImage = this.table.cards[n].frontImage;
                 var cell = row.insertCell(0);
@@ -148,17 +149,43 @@ function startGame() {
         document.getElementById('share').innerHTML = "";
     }
     var gameLevel = parseFloat(document.getElementById("level").value);
+    var rowNumber = document.getElementById("row").value;
+    var columnNumber = document.getElementById("column").value;
+    console.log("ovde" + columnNumber);
     backImageId = parseFloat(document.getElementById("back").value);
     var playerName = document.getElementById("player").value;
     if (playerName !== '') {
         document.getElementById("warning").removeAttribute("class");
         document.getElementById("warning").innerHTML = "";
+        document.getElementById("warningSize").removeAttribute("class");
+        document.getElementById("warningSize").innerHTML = "";
         document.getElementById("name").innerHTML = "Player: " + playerName;
-        var cg = new ConcentrationGame(gameLevel, playerName, backImageId);
-        cg.mixCards();
-        cg.showCards();
-        display();
-        audioOnStart.play();
+        var cg = void 0;
+        if (rowNumber === '' || columnNumber === '') {
+            cg = new ConcentrationGame(gameLevel, Math.sqrt(gameLevel), Math.sqrt(gameLevel), playerName, backImageId);
+            cg.mixCards();
+            cg.showCards();
+            display();
+            audioOnStart.play();
+        }
+        else if (parseFloat(rowNumber) * parseFloat(columnNumber) % 2 === 0) {
+            gameLevel = parseFloat(rowNumber) * parseFloat(columnNumber);
+            if (gameLevel <= 100) {
+                cg = new ConcentrationGame(gameLevel, parseFloat(columnNumber), parseFloat(rowNumber), playerName, backImageId);
+                cg.mixCards();
+                cg.showCards();
+                display();
+                audioOnStart.play();
+            }
+            else {
+                document.getElementById("warningSize").innerHTML = "100 cards on table is maximum! ";
+                document.getElementById("warningSize").setAttribute("class", "ui pointing red basic label");
+            }
+        }
+        else {
+            document.getElementById("warningSize").innerHTML = "You must insert correct values! ";
+            document.getElementById("warningSize").setAttribute("class", "ui pointing red basic label");
+        }
     }
     else {
         document.getElementById("warning").innerHTML = "You must insert your name! ";
@@ -166,7 +193,6 @@ function startGame() {
     }
 }
 window.onload = function () {
-    //setSounds();
     audioOnStart = new Audio("sounds/CardsShuffling.mp3");
     audioNo = new Audio("sounds/No.wav");
     audioCardFlip = new Audio("sounds/CardFlip.mp3");

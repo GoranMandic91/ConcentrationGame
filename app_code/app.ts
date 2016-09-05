@@ -93,31 +93,34 @@ class Cards {
 
 class ConcentrationGame {
     gameLevel: number;
+    rowNum:number;
+    columnNum:number;
     playerName: string;
     backImgId: number
     table: Cards;
 
-    constructor(gameLevel: number, playerName: string, backImgId: number) {
+    constructor(gameLevel: number,rowNum: number,columnNum: number, playerName: string, backImgId: number) {
         this.gameLevel = gameLevel;
+        this.rowNum=rowNum;
+        this.columnNum=columnNum;
         this.playerName = playerName;
         this.backImgId=backImgId;
         this.table = new Cards(this.gameLevel, this.backImgId);              
     }
 
     showCards() {
-        var numberOfRows: number = Math.sqrt(this.gameLevel);
-        var tab: HTMLTableElement = <HTMLTableElement>document.getElementById('table');
+        let tab: HTMLTableElement = <HTMLTableElement>document.getElementById('table');
         if (tab.innerHTML !== '') {
             tab.innerHTML = "";
             numberOfClicks = 0;
         }
-        for (let i = 0; i < numberOfRows; i++) {
+        for (let i = 0; i < this.rowNum; i++) {
             var row: HTMLTableRowElement = <HTMLTableRowElement>tab.insertRow();
-            for (let j = 0; j < numberOfRows; j++) {
-                var n: number = i * numberOfRows + j;
-                var backgroundImage = this.table.cards[n].backImage;
-                var frontImage = this.table.cards[n].frontImage;             
-                var cell = row.insertCell(0);                
+            for (let j = 0; j < this.columnNum; j++) {
+                let n: number = i * this.columnNum + j;
+                let backgroundImage = this.table.cards[n].backImage;
+                let frontImage = this.table.cards[n].frontImage;             
+                let cell = row.insertCell(0);                
                 cell.setAttribute("id", "card" + n.toString());
                 cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + ","+ this.gameLevel+")");
                 cell.appendChild(backgroundImage);             
@@ -139,7 +142,6 @@ class ConcentrationGame {
 class Highscore{
     
     constructor(public level: number, public name: string, public score:number, public time: string, public numOfCliks: number) {
-
     }
 }
 
@@ -147,6 +149,7 @@ let audioNo: HTMLAudioElement, audioYes: HTMLAudioElement ;
 let audioOnStart: HTMLAudioElement, audioApplause : HTMLAudioElement ;
 let audioCardFlip: HTMLAudioElement ;
 let backImageId: number;
+
 function startGame() {
     flag = false;
     if (mytime !== null) {
@@ -159,17 +162,41 @@ function startGame() {
         document.getElementById('share').innerHTML = "";
     }
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
+    let rowNumber= (<HTMLInputElement>document.getElementById("row")).value;
+    let columnNumber=(<HTMLInputElement>document.getElementById("column")).value;
+    console.log("ovde"+columnNumber);
     backImageId = parseFloat((<HTMLInputElement>document.getElementById("back")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
     if(playerName!==''){
         document.getElementById("warning").removeAttribute("class");
         document.getElementById("warning").innerHTML="";
+        document.getElementById("warningSize").removeAttribute("class");
+        document.getElementById("warningSize").innerHTML="";
         document.getElementById("name").innerHTML = "Player: " + playerName;
-        let cg = new ConcentrationGame(gameLevel, playerName,backImageId);
-        cg.mixCards();
-        cg.showCards();
-        display();
-        audioOnStart.play();
+        let cg: ConcentrationGame;
+        if(rowNumber === '' || columnNumber === ''){
+            cg = new ConcentrationGame(gameLevel, Math.sqrt(gameLevel), Math.sqrt(gameLevel), playerName,backImageId);
+            cg.mixCards();
+            cg.showCards();
+            display();
+            audioOnStart.play();
+        }else if(parseFloat(rowNumber)*parseFloat(columnNumber)%2 === 0){
+            gameLevel=parseFloat(rowNumber)*parseFloat(columnNumber);
+            if(gameLevel<=100){
+                cg = new ConcentrationGame(gameLevel, parseFloat(columnNumber), parseFloat(rowNumber), playerName,backImageId);
+                cg.mixCards();
+                cg.showCards();
+                display();
+                audioOnStart.play();
+            }else{
+                document.getElementById("warningSize").innerHTML = "100 cards on table is maximum! ";
+                document.getElementById("warningSize").setAttribute("class", "ui pointing red basic label");
+            }
+        }else{
+            document.getElementById("warningSize").innerHTML = "You must insert correct values! ";
+            document.getElementById("warningSize").setAttribute("class", "ui pointing red basic label");
+        }
+        
     }else {
         document.getElementById("warning").innerHTML = "You must insert your name! ";
         document.getElementById("warning").setAttribute("class", "ui right pointing red basic label")
@@ -177,7 +204,6 @@ function startGame() {
 }
 
 window.onload = function() {
-  //setSounds();
     audioOnStart = new Audio("sounds/CardsShuffling.mp3");
     audioNo = new Audio("sounds/No.wav");
     audioCardFlip = new Audio("sounds/CardFlip.mp3");
@@ -185,16 +211,16 @@ window.onload = function() {
     audioApplause = new Audio("sounds/Applause.mp3");
 };
 
-var temp: number = null;
-var tempCardId: number = null;
-var numberOfClicks = 0;
-var gameOver = 0;
+let temp: number = null;
+let tempCardId: number = null;
+let numberOfClicks = 0;
+let gameOver = 0;
 let score=0;
 let flag:boolean = false;
 
 function onClickCard(i: number, cardId: number, gameLevel: number ): any {
-    var element = document.getElementById("card" + i);
-    var element2: HTMLElement;
+    let  element = document.getElementById("card" + i);
+    let element2: HTMLElement;
     if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>' &&  flag === false) {
         element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
         audioCardFlip.play();
