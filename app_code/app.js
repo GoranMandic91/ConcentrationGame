@@ -63,12 +63,10 @@ var Card = (function () {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
         this.backImage.setAttribute("src", Background[backImageId]);
-        this.backImage.style.height = "68px";
-        this.backImage.style.width = "50px";
+        //this.backImage.className= "cardFrame";
         this.frontImage = document.createElement("img");
-        this.frontImage.setAttribute("src", Card_Picture[cardId + 1]);
-        this.frontImage.style.height = "68px";
-        this.frontImage.style.width = "50px";
+        this.frontImage.setAttribute("src", Card_Picture[cardId]);
+        //this.frontImage.className= "cardFrame";
     }
     return Card;
 }());
@@ -106,9 +104,22 @@ var ConcentrationGame = (function () {
                 var backgroundImage = this.table.cards[n].backImage;
                 var frontImage = this.table.cards[n].frontImage;
                 var cell = row.insertCell(0);
-                cell.setAttribute("id", "card" + n.toString());
-                cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + "," + this.gameLevel + ")");
-                cell.appendChild(backgroundImage);
+                var section = document.createElement('section');
+                section.className = "containerCard";
+                var div = document.createElement('div');
+                div.setAttribute("id", "card" + n);
+                div.className = "card";
+                div.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + "," + this.gameLevel + ")");
+                var div2 = document.createElement('div');
+                div2.className = "back";
+                div2.appendChild(backgroundImage);
+                div.appendChild(div2);
+                var div1 = document.createElement('div');
+                div1.className = "front";
+                div1.appendChild(frontImage);
+                div.appendChild(div1);
+                section.appendChild(div);
+                cell.appendChild(section);
             }
         }
     };
@@ -151,7 +162,6 @@ function startGame() {
     var gameLevel = parseFloat(document.getElementById("level").value);
     var rowNumber = document.getElementById("row").value;
     var columnNumber = document.getElementById("column").value;
-    console.log("ovde" + columnNumber);
     backImageId = parseFloat(document.getElementById("back").value);
     var playerName = document.getElementById("player").value;
     if (playerName !== '') {
@@ -208,8 +218,8 @@ var flag = false;
 function onClickCard(i, cardId, gameLevel) {
     var element = document.getElementById("card" + i);
     var element2;
-    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>' && flag === false) {
-        element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
+    if (element.innerHTML !== '<div class="cardFrame"></div>' && flag === false) {
+        element.classList.toggle("flipped");
         audioCardFlip.play();
         if (temp === null && tempCardId === null) {
             temp = i;
@@ -218,11 +228,15 @@ function onClickCard(i, cardId, gameLevel) {
         else if (tempCardId === cardId && temp !== i) {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '<div style="height:68px;width:50px;"></div>';
-                element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
+                element.classList.toggle("flipped");
+                element2.classList.toggle("flipped");
+                setTimeout(function () {
+                    element.innerHTML = '<div class="cardFrame"></div>';
+                    element2.innerHTML = '<div class="cardFrame"></div>';
+                }, 220);
                 audioYes.play();
                 flag = false;
-            }, 500);
+            }, 780);
             temp = null;
             tempCardId = null;
             score += 5;
@@ -231,16 +245,17 @@ function onClickCard(i, cardId, gameLevel) {
         }
         else if (tempCardId === cardId && temp == i) {
             numberOfClicks--;
+            element.classList.toggle("flipped");
         }
         else {
             element2 = document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
+                element.classList.toggle("flipped");
+                element2.classList.toggle("flipped");
                 score -= 1;
                 audioNo.play();
                 flag = false;
-            }, 500);
+            }, 1000);
             temp = null;
             tempCardId = null;
             flag = true;
@@ -252,11 +267,13 @@ function onClickCard(i, cardId, gameLevel) {
             audioApplause.play();
             setTimeout(function () {
                 document.getElementById('table').innerHTML = "";
-            }, 500);
+            }, 1000);
             var name_1 = document.getElementById("player").value;
             var hs = new Highscore(gameLevel, name_1, score, str, numberOfClicks);
             addToHighscore(hs);
-            printHighScoreTable(gameLevel.toString());
+            setTimeout(function () {
+                printHighScoreTable(gameLevel.toString());
+            }, 1000);
             gameOver = 0;
             numberOfClicks = 0;
             score = 0;

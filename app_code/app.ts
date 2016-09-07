@@ -68,12 +68,8 @@ class Card {
         this.cardId = cardId;
         this.backImage = document.createElement("img");
         this.backImage.setAttribute("src", Background[backImageId]);
-        this.backImage.style.height= "68px";
-        this.backImage.style.width= "50px"; 
         this.frontImage = document.createElement("img");
-        this.frontImage.setAttribute("src", Card_Picture[cardId+1]);
-        this.frontImage.style.height= "68px";
-        this.frontImage.style.width= "50px"; 
+        this.frontImage.setAttribute("src", Card_Picture[cardId]);
     }
    
 };
@@ -120,10 +116,26 @@ class ConcentrationGame {
                 let n: number = i * this.columnNum + j;
                 let backgroundImage = this.table.cards[n].backImage;
                 let frontImage = this.table.cards[n].frontImage;             
-                let cell = row.insertCell(0);                
-                cell.setAttribute("id", "card" + n.toString());
-                cell.setAttribute("onclick", "onClickCard(" + n + "," + this.table.cards[n].cardId + ","+ this.gameLevel+")");
-                cell.appendChild(backgroundImage);             
+                let cell = row.insertCell(0);
+                let section=document.createElement('section');
+                section.className="containerCard";
+                let div=document.createElement('div');
+                div.setAttribute("id", "card"+n);
+                div.className="card";
+                div.setAttribute("onclick", "onClickCard("+ n +","+this.table.cards[n].cardId +","+this.gameLevel+")");
+                
+                let div2=document.createElement('div');
+                div2.className="back";
+                div2.appendChild(backgroundImage);
+                div.appendChild(div2);
+
+                let div1=document.createElement('div');
+                div1.className="front";
+                div1.appendChild(frontImage);
+                div.appendChild(div1);
+
+                section.appendChild(div); 
+                cell.appendChild(section);         
             }
         }
     }
@@ -164,7 +176,6 @@ function startGame() {
     let gameLevel = parseFloat((<HTMLInputElement>document.getElementById("level")).value);
     let rowNumber= (<HTMLInputElement>document.getElementById("row")).value;
     let columnNumber=(<HTMLInputElement>document.getElementById("column")).value;
-    console.log("ovde"+columnNumber);
     backImageId = parseFloat((<HTMLInputElement>document.getElementById("back")).value);
     let playerName = (<HTMLInputElement>document.getElementById("player")).value;
     if(playerName!==''){
@@ -219,22 +230,27 @@ let score=0;
 let flag:boolean = false;
 
 function onClickCard(i: number, cardId: number, gameLevel: number ): any {
-    let  element = document.getElementById("card" + i);
+    let element: HTMLElement= document.getElementById("card" + i);
     let element2: HTMLElement;
-    if (element.innerHTML !== '<div style="height:68px;width:50px;"></div>' &&  flag === false) {
-        element.innerHTML = '<img src="' + Card_Picture[cardId + 1] + '" style="height:68px;width:50px;">';
+    if (element.innerHTML !== '<div class="cardFrame"></div>' &&  flag === false) {
+        element.classList.toggle("flipped");
         audioCardFlip.play();
         if (temp === null && tempCardId === null) {
             temp = i;
             tempCardId = cardId;          
         } else if (tempCardId === cardId && temp !== i) {
-            element2 = document.getElementById("card" + temp);
+            element2 = <HTMLImageElement> document.getElementById("card" + temp);
             setTimeout(function () {
-                element.innerHTML = '<div style="height:68px;width:50px;"></div>';
-                element2.innerHTML = '<div style="height:68px;width:50px;"></div>';
+                element.classList.toggle("flipped");
+                element2.classList.toggle("flipped");
+                setTimeout(function(){
+                    element.innerHTML  ='<div class="cardFrame"></div>'
+                    element2.innerHTML ='<div class="cardFrame"></div>';
+                
+                },220);
                 audioYes.play();
                 flag=false;
-            }, 500);
+            }, 780);
             temp = null;
             tempCardId = null;
             score+=5;
@@ -242,15 +258,16 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
             flag=true;           
         } else if (tempCardId === cardId && temp == i) {
             numberOfClicks--;
+            element.classList.toggle("flipped");
         } else {         
-            element2 = document.getElementById("card" + temp); 
+            element2 =document.getElementById("card" + temp); 
             setTimeout(function () {
-                element.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';
-                element2.innerHTML = '<img src="' + Background[backImageId] + '" style="height:68px;width:50px;">';                
+                element.classList.toggle("flipped");
+                element2.classList.toggle("flipped");
                 score-=1;
                 audioNo.play();
                 flag=false;
-            }, 500);
+            }, 1000);
             temp = null;
             tempCardId = null;
             flag=true;
@@ -262,11 +279,13 @@ function onClickCard(i: number, cardId: number, gameLevel: number ): any {
             audioApplause.play();
             setTimeout(function () {
                 document.getElementById('table').innerHTML = "";
-            }, 500);
+            }, 1000);
             let name = (<HTMLInputElement>document.getElementById("player")).value;
             let hs = new Highscore(gameLevel, name, score, str, numberOfClicks);
             addToHighscore(hs);
-            printHighScoreTable(gameLevel.toString());
+            setTimeout(function(){
+                printHighScoreTable(gameLevel.toString());
+            }, 1000);
             gameOver = 0;
             numberOfClicks = 0;
             score=0;
