@@ -202,6 +202,7 @@ function startGame() {
         document.getElementById("warning").setAttribute("class", "ui right pointing red basic label");
     }
 }
+
 window.onload = function () {
     audioOnStart = new Audio("sounds/CardsShuffling.mp3");
     audioNo = new Audio("sounds/No.wav");
